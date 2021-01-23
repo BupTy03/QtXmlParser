@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Devices>
+	<Device Name="Player">
+		<Commands>
+			<Command Name="On" Number="1"/>
+			<Command Name="Off" Number="2"/>
+			<Command Name="Volume" Number="3"/>
+			<Command Name="Mute" Number="4"/>
+		</Commands>
+		<Feedbacks>
+			<Feedback Name="IsOn" Number="1"/>
+			<Feedback Name="Volume" Number="2"/>
+			<Feedback Name="IsMute" Number="3"/>
+		</Feedbacks>
+	</Device>
+	<Device Name="Breezer">
+		<Commands>
+			<Command Name="SetTemperature" Number="1"/>
+			<Command Name="SetCO2" Number="2"/>
+			<Command Name="SetHumidity" Number="3"/>
+		</Commands>
+		<Feedbacks>
+			<Feedback Name="Temperature" Number="1"/>
+			<Feedback Name="CO2" Number="2"/>
+			<Feedback Name="Humidity" Number="3"/>
+		</Feedbacks>
+	</Device>
+	<Device Name="DEvice1"></Device>
+</Devices>
