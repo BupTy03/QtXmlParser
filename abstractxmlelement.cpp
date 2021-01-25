@@ -33,6 +33,10 @@ void AbstractXmlElement::ChildElement(QXmlStreamReader& reader)
 
 void AbstractXmlElement::AddChild(std::unique_ptr<XmlElement> child)
 {
+    const auto name = child->Name();
+    if(FindChildByName(QStringRef(&name)) != nullptr)
+        return;
+
     children_.emplace_back(std::move(child));
 }
 

@@ -1,59 +1,86 @@
 #include "loaders.hpp"
 
 
-FeedbackLoader::FeedbackLoader(DeviceLoader *pParent) : parent_(*pParent) { assert(pParent); }
+RootFolder::~RootFolder()
+{
+}
+
+
+FeedbackLoader::FeedbackLoader(RootFolder* pFolder) : pFolder_(pFolder) { assert(pFolder_); }
 
 QString FeedbackLoader::Name() const { return "Feedback"; }
 
 void FeedbackLoader::BeginElement(const QXmlStreamReader& reader)
 {
-    parent_.AddFolderElement(std::make_unique<Feedback>(
-                                      reader.attributes().value("Name").toString(),
-                                      reader.attributes().value("Number").toInt()));
+    pFolder_->AddFolderElement(std::make_unique<Feedback>(
+                          reader.attributes().value("Name").toString(),
+                          reader.attributes().value("Number").toInt()));
 }
 
 
 
-CommandLoader::CommandLoader(DeviceLoader* pDeviceLoader) : parent_(*pDeviceLoader) { assert(pDeviceLoader); }
+CommandLoader::CommandLoader(RootFolder* pFolder) : pFolder_(pFolder) { assert(pFolder_); }
 
 QString CommandLoader::Name() const { return "Command"; }
 
 void CommandLoader::BeginElement(const QXmlStreamReader &reader)
 {
-    parent_.AddFolderElement(std::make_unique<Command>(
-                                      reader.attributes().value("Name").toString(),
-                                      reader.attributes().value("Number").toInt()));
+    pFolder_->AddFolderElement(std::make_unique<Command>(
+                          reader.attributes().value("Name").toString(),
+                          reader.attributes().value("Number").toInt()));
 }
 
 
 DeviceLoader::DeviceLoader(Project* pProject)
     : AbstractXmlElement("Device")
     , project_(*pProject)
+    , pDeviceRootFolder_()
 {
     assert(pProject);
-
-    auto commands = std::make_unique<AbstractXmlElement>("Commands");
-    commands->AddChild(std::make_unique<CommandLoader>(this));
-    AddChild(std::move(commands));
-
-    auto feedbacks = std::make_unique<AbstractXmlElement>("Feedbacks");
-    feedbacks->AddChild(std::make_unique<FeedbackLoader>(this));
-    AddChild(std::move(feedbacks));
 }
 
 QString DeviceLoader::Name() const { return "Device"; }
 
 void DeviceLoader::AddFolderElement(std::unique_ptr<FolderElement> elem)
 {
-    pDevice_->RootFolder().Add(std::move(elem));
+    pDeviceRootFolder_->Add(std::move(elem));
 }
 
-void DeviceLoader::BeginElement(const QXmlStreamReader &reader)
+void DeviceLoader::BeginElement(const QXmlStreamReader& reader)
 {
-    pDevice_ = std::make_unique<Device>(reader.attributes().value("Name").toString());
+    deviceName_ = reader.attributes().value("Name").toString();
+    pDeviceRootFolder_ = std::make_unique<Folder>("Root");
 }
 
 void DeviceLoader::EndElement()
 {
-    project_.Add(std::move(pDevice_));
+    project_.Add(std::make_unique<Device>(std::move(deviceName_), std::move(pDeviceRootFolder_)));
+}
+
+
+
+FolderLoader::FolderLoader(RootFolder* pParent)
+    : AbstractXmlElement("Folder")
+    , pParent_(pParent)
+    , pCurrentFolder_()
+{
+    assert(pParent_ != nullptr);
+}
+
+void FolderLoader::AddFolderElement(std::unique_ptr<FolderElement> elem)
+{
+    if(pCurrentFolder_ == nullptr)
+        throw std::runtime_error("Attemt to add element in unexisting folder");
+
+    pCurrentFolder_->Add(std::move(elem));
+}
+
+void FolderLoader::BeginElement(const QXmlStreamReader& reader)
+{
+    pCurrentFolder_ = std::make_unique<Folder>(reader.attributes().value("Name").toString());
+}
+
+void FolderLoader::EndElement()
+{
+    pParent_->AddFolderElement(std::move(pCurrentFolder_));
 }

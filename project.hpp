@@ -6,7 +6,8 @@
 class Device
 {
 public:
-    explicit Device(QString Name);
+    explicit Device(QString Name, std::unique_ptr<Folder> pRootFolder);
+    ~Device();
 
     Device(const Device&) = delete;
     Device& operator=(const Device&) = delete;
@@ -18,7 +19,7 @@ public:
 
 private:
     QString name_;
-    Folder rootFolder_;
+    std::unique_ptr<Folder> pRootFolder_;
 };
 
 class Project

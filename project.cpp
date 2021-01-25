@@ -8,16 +8,22 @@
 #include <stdexcept>
 
 
-Device::Device(QString Name)
+Device::Device(QString Name, std::unique_ptr<Folder> pRootFolder)
     : name_(std::move(Name))
-    , rootFolder_("Root")
-{}
+    , pRootFolder_(std::move(pRootFolder))
+{
+}
+
+Device::~Device()
+{
+
+}
 
 QString Device::Name() const { return name_; }
 
-Folder& Device::RootFolder() { return rootFolder_; }
+Folder& Device::RootFolder() { return *pRootFolder_; }
 
-const Folder& Device::RootFolder() const { return rootFolder_; }
+const Folder& Device::RootFolder() const { return *pRootFolder_; }
 
 void Project::Add(std::unique_ptr<Device> d)
 {
@@ -44,6 +50,15 @@ std::unique_ptr<Project> LoadProject(QXmlStreamReader& reader)
 
     auto project = std::make_unique<Project>();
     auto device = std::make_unique<DeviceLoader>(project.get());
+
+    auto commands = std::make_unique<AbstractXmlElement>("Commands");
+    commands->AddChild(std::make_unique<CommandLoader>(device.get()));
+
+    auto feedbacks = std::make_unique<AbstractXmlElement>("Feedbacks");
+    feedbacks->AddChild(std::make_unique<FeedbackLoader>(device.get()));
+
+    device->AddChild(std::move(commands));
+    device->AddChild(std::move(feedbacks));
 
     AbstractXmlElement devices("Devices");
     devices.AddChild(std::move(device));
