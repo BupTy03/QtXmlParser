@@ -36,7 +36,7 @@ void XmlElement::Parse(QXmlStreamReader &reader)
     throw std::runtime_error("End element not found");
 }
 
-void XmlElement::AddChild(std::unique_ptr<XmlElement> child)
+void XmlElement::AddChild(std::unique_ptr<XmlElement>)
 {
 }
 

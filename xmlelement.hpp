@@ -17,9 +17,9 @@ public:
 
     void Parse(QXmlStreamReader& reader);
     virtual QString Name() const = 0;
+    virtual void AddChild(std::unique_ptr<XmlElement>);
 
 protected:
-    virtual void AddChild(std::unique_ptr<XmlElement> child);
     virtual void BeginElement(const QXmlStreamReader&);
     virtual void ChildElement(QXmlStreamReader&);
     virtual void EndElement();

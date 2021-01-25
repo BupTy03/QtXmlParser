@@ -9,7 +9,7 @@
 		</Commands>
 		<Feedbacks>
 			<Feedback Name="IsOn" Number="1"/>
-			<Feedback Name="Volume" Number="2"/>
+			<Feedback Name="CurrentVolume" Number="2"/>
 			<Feedback Name="IsMute" Number="3"/>
 		</Feedbacks>
 	</Device>

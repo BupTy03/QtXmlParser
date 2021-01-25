@@ -5,6 +5,11 @@
 #include <stdexcept>
 
 
+AbstractXmlElement::AbstractXmlElement(QString name)
+    : name_(std::move(name))
+{
+}
+
 XmlElement* AbstractXmlElement::FindChildByName(QStringRef name) const
 {
     auto it = std::find_if(std::cbegin(children_), std::cend(children_),
@@ -29,4 +34,9 @@ void AbstractXmlElement::ChildElement(QXmlStreamReader& reader)
 void AbstractXmlElement::AddChild(std::unique_ptr<XmlElement> child)
 {
     children_.emplace_back(std::move(child));
+}
+
+QString AbstractXmlElement::Name() const
+{
+    return name_;
 }

@@ -18,6 +18,8 @@ add_executable(QtXmlParser
   main.cpp
   xmlelement.cpp xmlelement.hpp
   abstractxmlelement.cpp abstractxmlelement.hpp
-  xmlelementslist.cpp xmlelementslist.hpp
+  folder.cpp folder.hpp
+  project.cpp project.hpp
+  loaders.cpp loaders.hpp
 )
 target_link_libraries(QtXmlParser Qt${QT_VERSION_MAJOR}::Core)
