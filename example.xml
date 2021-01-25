@@ -2,15 +2,20 @@
 <Devices>
 	<Device Name="Player">
 		<Commands>
-			<Command Name="On" Number="1"/>
-			<Command Name="Off" Number="2"/>
+			<Folder Name="Power">
+				<Command Name="On" Number="1"/>
+				<Command Name="Off" Number="2"/>
+			</Folder>
 			<Command Name="Volume" Number="3"/>
 			<Command Name="Mute" Number="4"/>
 		</Commands>
 		<Feedbacks>
-			<Feedback Name="IsOn" Number="1"/>
-			<Feedback Name="CurrentVolume" Number="2"/>
-			<Feedback Name="IsMute" Number="3"/>
+			<Folder Name="PowerStatus">
+				<Feedback Name="IsOn" Number="1"/>
+				<Feedback Name="IsOff" Number="2"/>
+			</Folder>
+			<Feedback Name="CurrentVolume" Number="3"/>
+			<Feedback Name="IsMute" Number="4"/>
 		</Feedbacks>
 	</Device>
 	<Device Name="Breezer">

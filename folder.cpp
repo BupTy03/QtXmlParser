@@ -24,7 +24,7 @@ Folder::Folder(QString name) : name_(std::move(name)), elements_() {}
 
 QString Folder::Name() const { return name_; }
 
-const std::vector<std::unique_ptr<FolderElement> > &Folder::Children() const { return elements_; }
+const std::vector<std::unique_ptr<FolderElement>>& Folder::Children() const { return elements_; }
 
 void Folder::Add(std::unique_ptr<FolderElement> elem)
 {

@@ -1,6 +1,7 @@
 #include "project.hpp"
 #include "abstractxmlelement.hpp"
 #include "loaders.hpp"
+#include "folder.hpp"
 
 #include <QXmlStreamReader>
 
@@ -54,8 +55,16 @@ std::unique_ptr<Project> LoadProject(QXmlStreamReader& reader)
     auto commands = std::make_unique<AbstractXmlElement>("Commands");
     commands->AddChild(std::make_unique<CommandLoader>(device.get()));
 
+    auto commandsFolder = std::make_unique<FolderLoader>(device.get());
+    commandsFolder->AddChild(std::make_unique<CommandLoader>(commandsFolder.get()));
+    commands->AddChild(std::move(commandsFolder));
+
     auto feedbacks = std::make_unique<AbstractXmlElement>("Feedbacks");
     feedbacks->AddChild(std::make_unique<FeedbackLoader>(device.get()));
+
+    auto feedbacksFolder = std::make_unique<FolderLoader>(device.get());
+    feedbacksFolder->AddChild(std::make_unique<FeedbackLoader>(feedbacksFolder.get()));
+    feedbacks->AddChild(std::move(feedbacksFolder));
 
     device->AddChild(std::move(commands));
     device->AddChild(std::move(feedbacks));
@@ -67,14 +76,24 @@ std::unique_ptr<Project> LoadProject(QXmlStreamReader& reader)
     return project;
 }
 
+void ShowFolderElem(const FolderElement& elem, std::size_t level = 0)
+{
+    std::cout << std::string(level * 4, ' ') << elem.Name().toStdString() << std::endl;
+
+    auto pFolder = dynamic_cast<const Folder*>(&elem);
+    if(pFolder == nullptr)
+        return;
+
+    for(auto&& child : pFolder->Children())
+        ShowFolderElem(*child, level + 1);
+}
+
 void ShowProject(const Project& project)
 {
     for(auto&& device : project.Devices())
     {
         std::cout << "Device: " << device->Name().toStdString() << '\n';
-        for(auto&& child : device->RootFolder().Children())
-            std::cout << "    Child: \"" << child->Name().toStdString() << "\"\n";
-
+        ShowFolderElem(device->RootFolder(), 1);
         std::cout << std::endl;
     }
 }
